@@ -7,7 +7,7 @@ services:
     ports:
       - "8086:8086"  # InfluxDB HTTP API
     volumes:
-      - influxdb_data:/var/lib/influxdb2
+      - ./influxdb_data:/var/lib/influxdb2
     environment:
       - INFLUXDB_DB=stats
       - INFLUXDB_ADMIN_USER=admin
@@ -40,13 +40,13 @@ services:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
     volumes:
-      - grafana_data:/var/lib/grafana
+      - ./grafana_data:/var/lib/grafana
     networks:
       - monitor-mycetes-net
 
-volumes:
-  influxdb_data:
-  grafana_data:
+#volumes:
+#  influxdb_data:
+#  grafana_data:
 
 networks:
   monitor-mycetes-net:
