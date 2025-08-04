@@ -3,7 +3,9 @@ version: '3.8'
 services:
 
   mycetes:
-    build: .
+    build:
+      context: ../..
+      dockerfile: misc/docker/Dockerfile
     container_name: mycetes
     ports:
       - "3002:3002"  # Expose the Axum app on port 3002
