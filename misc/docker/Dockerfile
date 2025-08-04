@@ -1,7 +1,9 @@
 FROM rust:latest
 
-WORKDIR /usr/src/mycetes
-COPY . .
+WORKDIR /opt
+COPY db/ /opt/db
+COPY web/ /opt/web
+COPY Cargo.toml /opt/Cargo.toml
 RUN cargo install --path .
 
 EXPOSE 3002
