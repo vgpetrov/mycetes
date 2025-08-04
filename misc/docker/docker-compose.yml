@@ -1,13 +1,41 @@
 version: '3.8'
 
 services:
+
+  mycetes:
+    build: .
+    container_name: mycetes
+    ports:
+      - "3002:3002"  # Expose the Axum app on port 3002
+    environment:
+      - STATSD_HOST=statsd:8125  # Environment variable for StatsD host and port
+    depends_on:
+      - telegraf
+    networks:
+      - monitor-mycetes-net
+      - db-mycetes-net
+
+  db:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - db-mycetes-net
+
   influxdb:
     image: influxdb:2.7
     container_name: influxdb
     ports:
       - "8086:8086"  # InfluxDB HTTP API
     volumes:
-      - ./influxdb_data:/var/lib/influxdb2
+      - influxdb_data:/var/lib/influxdb2
     environment:
       - INFLUXDB_DB=stats
       - INFLUXDB_ADMIN_USER=admin
@@ -40,14 +68,17 @@ services:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
     volumes:
-      - ./grafana_data:/var/lib/grafana
+      - grafana_data:/var/lib/grafana
     networks:
       - monitor-mycetes-net
 
-#volumes:
-#  influxdb_data:
-#  grafana_data:
+volumes:
+  influxdb_data:
+  grafana_data:
+  pg_data:
 
 networks:
   monitor-mycetes-net:
+    driver: bridge
+  db-mycetes-net:
     driver: bridge
