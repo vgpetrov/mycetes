@@ -12,16 +12,16 @@ async fn main() {
 
     let app = Router::new()
         .route("/", get(hello_handler))
-        .route("/:name", get(move |name| named_handler(name)))
+        .route("/{name}", get(move |name| named_handler(name)))
         .route(
-            "/stats1/:name",
+            "/stats1/{name}",
             get({
                 let arc = Arc::clone(&arc_statsd);
                 move |name| named_handler_stats(name, arc)
             }),
         )
         .route(
-            "/stats2/:name",
+            "/stats2/{name}",
             get({
                 let arc = Arc::clone(&arc_statsd);
                 move |name| named_handler_stats(name, arc)
