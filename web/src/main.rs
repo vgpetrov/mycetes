@@ -7,7 +7,7 @@ use statsd::Client;
 
 #[tokio::main]
 async fn main() {
-    let statsd_client = Client::new("statsd:8125", "axum_hello.request").unwrap();
+    let statsd_client = Client::new("telegraf:8125", "mycetes.request").unwrap();
     let arc_statsd = Arc::new(statsd_client);
 
     let app = Router::new()
