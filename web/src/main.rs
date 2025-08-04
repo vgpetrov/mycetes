@@ -3,11 +3,11 @@ use axum::extract::Path;
 use axum::response::Html;
 use axum::routing::get;
 use std::sync::Arc;
-use statsd::Client;
+use datadog_statsd::Client;
 
 #[tokio::main]
 async fn main() {
-    let statsd_client = Client::new("telegraf:8125", "mycetes.request").unwrap();
+    let statsd_client = Client::new("telegraf:8125", "mycetes.request", Some(vec!["start"])).unwrap();
     let arc_statsd = Arc::new(statsd_client);
 
     let app = Router::new()
@@ -47,7 +47,7 @@ async fn named_handler(Path(name): Path<String>) -> Html<String> {
 }
 
 async fn named_handler_stats(Path(name): Path<String>, statsd: Arc<Client>) -> Html<String> {
-    statsd.incr("count");
+    statsd.incr("count", &Some(vec!["click"]));
     let s = format!("<h1>This is stats, {name}!</h1>");
     Html(s)
 }
