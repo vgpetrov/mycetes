@@ -7,4 +7,5 @@ edition = "2024"
 axum = { version = "0.8.4"}
 tokio = { version = "1.47.0", features = ["full"] }
 serde = { version = "1.0.219" }
-datadog-statsd = "0.1.2"
+dotenv = { version = "0.15.0" }
+stats = { path = "../stats"}
