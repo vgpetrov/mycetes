@@ -1,5 +1,6 @@
 use std::env;
-use axum::Router;
+use std::error::Error;
+use axum::{Router};
 use axum::extract::{Path, State};
 use axum::response::Html;
 use axum::routing::get;
@@ -16,12 +17,13 @@ struct AppState {
 }
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), Box<dyn Error>> {
     dotenv().ok();
 
-    // println!("{}", env::var("STATS_HOST").expect("STATS_HOST must be set in .env"));
-    
-    let stats_client: Box<dyn StatsSender + Send + Sync> = Box::new(StatsClient::new());
+    let host = env::var("STATS_HOST")?;
+    let port = env::var("STATS_PORT")?;
+
+    let stats_client: Box<dyn StatsSender + Send + Sync> = Box::new(StatsClient::new(host, port.parse::<u16>()?));
     let arc_stats_client = Arc::new(stats_client);
 
     let app_state = AppState {
@@ -41,7 +43,8 @@ async fn main() {
 
     println!("listening on {}", listener.local_addr().unwrap());
 
-    axum::serve(listener, app).await.unwrap()
+    axum::serve(listener, app).await.unwrap();
+    Ok(())
 }
 
 async fn hello_handler() -> Html<&'static str> {

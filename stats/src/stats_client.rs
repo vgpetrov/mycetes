@@ -6,15 +6,15 @@ pub struct StatsClient {
 }
 
 impl StatsClient {
-    pub fn new() -> Self {
+    pub fn new(host: String, port: u16) -> Self {
         StatsClient {
-            statsd_client: Client::new("192.168.1.3:8125", "mycetes.request", Some(vec!["start"])).unwrap()
+            statsd_client: Client::new(format!("{}:{}", host, port), "mycetes.request", Some(vec!["start"])).unwrap()
         }
     }
 }
 
 impl StatsSender for StatsClient {
     fn incr(&self) {
-        self.statsd_client.incr("hello", &Some(vec!["abc"]));
+        self.statsd_client.incr("hello", &Some(vec!["abc", "def", "ghi"]));
     }
 }
