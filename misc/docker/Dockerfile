@@ -4,6 +4,7 @@ WORKDIR /opt
 COPY db/ /opt/db
 COPY web/ /opt/web
 COPY stats/ /opt/stats
+COPY .env /opt/.env
 COPY Cargo.toml /opt/Cargo.toml
 
 WORKDIR /opt/web
