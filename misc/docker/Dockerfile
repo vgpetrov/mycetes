@@ -3,6 +3,7 @@ FROM rust:latest
 WORKDIR /opt
 COPY db/ /opt/db
 COPY web/ /opt/web
+COPY stats/ /opt/stats
 COPY Cargo.toml /opt/Cargo.toml
 
 WORKDIR /opt/web
