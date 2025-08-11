@@ -6,6 +6,7 @@ use axum::response::Html;
 use axum::routing::get;
 use std::sync::Arc;
 use dotenv::dotenv;
+use db::migration;
 use stats::stats_client::StatsClient;
 use stats::stats_stub::StatsStub;
 use stats::StatsSender;
@@ -19,6 +20,8 @@ struct AppState {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     dotenv().ok();
+
+    migration().await?;
 
     let host = env::var("STATS_HOST")?;
     let port = env::var("STATS_PORT")?;
