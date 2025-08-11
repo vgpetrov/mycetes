@@ -8,7 +8,7 @@ pub struct StatsClient {
 impl StatsClient {
     pub fn new(host: String, port: u16) -> Self {
         StatsClient {
-            statsd_client: Client::new(format!("{}:{}", host, port), "mycetes.request", Some(vec!["start"])).unwrap()
+            statsd_client: Client::new(format!("{}:{}", host, port), "mycetes", Some(vec!["start"])).unwrap()
         }
     }
 }
