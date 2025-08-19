@@ -1,7 +1,8 @@
 [package]
-name = "db"
+name = "repository"
 version = "0.1.0"
 edition = "2024"
 
 [dependencies]
 sqlx = { version = "0.8", features = [ "runtime-tokio", "postgres", "migrate" ] }
+async-trait = { version = "0.1.89" }
