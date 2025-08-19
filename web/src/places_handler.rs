@@ -45,13 +45,12 @@ pub async fn named_handler_stats2(
 }
 
 pub async fn save_place(
-    Path(name): Path<String>,
     State(state): State<AppState>,
 ) -> Result<impl IntoResponse, AppError> {
     let place = Place {
         id: None,
         name: String::from("Moscow"),
-        user: 1,
+        user_id: 1,
         latitude: 50.0,
         longitude: 10.0,
         is_deleted: false,
@@ -76,7 +75,6 @@ struct PlaceResponse {
 }
 
 pub async fn list_places(
-    Path(name): Path<String>,
     State(state): State<AppState>,
 ) -> Result<impl IntoResponse, AppError> {
     let places_list: Vec<PlaceResponse> = state
@@ -88,11 +86,11 @@ pub async fn list_places(
             PlaceResponse {
                 id: place.id,
                 name: place.name.clone(),
-                user: place.user,
+                user: place.user_id,
                 latitude: place.latitude,
                 longitude: place.longitude,
             }
         }).collect();
-    
+
     Ok(Json(places_list))
 }

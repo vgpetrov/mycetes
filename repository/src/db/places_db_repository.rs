@@ -21,7 +21,7 @@ impl PlacesRepository for PlacesDbRepository {
 
         let places = sqlx::query_as::<_, Place>(
             r#"
-            SELECT id, name, "user", latitude, longitude, is_deleted
+            SELECT id, name, user_id, latitude, longitude, is_deleted
             FROM places
             WHERE is_deleted = false
             ORDER BY id
@@ -38,13 +38,13 @@ impl PlacesRepository for PlacesDbRepository {
 
         let place = sqlx::query_as::<_, Place>(
             r#"
-            INSERT INTO places (name, "user", latitude, longitude)
+            INSERT INTO places (name, user_id, latitude, longitude)
             VALUES ($1, $2, $3, $4)
-            RETURNING id, name, "user", latitude, longitude, is_deleted
+            RETURNING id, name, user_id, latitude, longitude, is_deleted
         "#,
         )
         .bind(place.name)
-        .bind(place.user)
+        .bind(place.user_id)
         .bind(place.latitude)
         .bind(place.longitude)
         .fetch_one(pool)

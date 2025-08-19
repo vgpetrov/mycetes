@@ -40,7 +40,7 @@ async fn init_state() -> Result<AppState, Box<dyn Error>> {
         let db_password = env::var("DB_PASSWORD")?;
         let db_name = env::var("DB_NAME")?;
 
-        let mut db_helper = DbHelper::new(db_host, db_user, db_password, db_name);
+        let mut db_helper = DbHelper::new(db_user, db_password, db_host, db_name);
         db_helper.init().await;
         let db_helper_arc = Arc::new(db_helper);
         Box::new(PlacesDbRepository::new(Arc::clone(&db_helper_arc)))

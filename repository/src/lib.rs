@@ -9,7 +9,7 @@ pub mod mem;
 pub struct Place {
     pub id: Option<i64>,
     pub name: String,
-    pub user: i64,
+    pub user_id: i64,
     pub latitude: f64,
     pub longitude: f64,
     pub is_deleted: bool,
