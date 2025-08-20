@@ -43,6 +43,9 @@ impl DbHelper {
     }
 
     pub fn get_pool(&self) -> Result<&sqlx::Pool<sqlx::Postgres>, Box<dyn Error>> {
-        Ok(self.pool.as_ref().unwrap())
+        match self.pool.as_ref() {
+            Some(pool) => Ok(pool),
+            None => Err("Database not initialized".into())
+        }
     }
 }
