@@ -1,4 +1,9 @@
 mod places_handler;
+mod requests;
+mod commands;
+mod queries;
+mod use_cases;
+mod responses;
 
 use std::env;
 use std::error::Error;
@@ -13,12 +18,15 @@ use repository::mem::places_memory_repository::MemPlaceRepository;
 use stats::stats_client::StatsClient;
 use stats::stats_stub::StatsStub;
 use stats::StatsSender;
-use crate::places_handler::{hello_handler, list_places, named_handler, named_handler_stats1, named_handler_stats2, save_place};
+use crate::places_handler::{list_places, create_place};
+use crate::queries::ListPlacesQuery;
+use crate::use_cases::CreatePlaceUseCase;
 
 #[derive(Clone)]
 struct AppState {
     stats_client: Arc<Box<dyn StatsSender + Send + Sync>>,
-    places_repository: Arc<Box<dyn PlacesRepository + Send + Sync>>,
+    create_place_use_case: Arc<Box<CreatePlaceUseCase>>,
+    list_places_query: Arc<Box<ListPlacesQuery>>
 }
 
 async fn init_state() -> Result<AppState, Box<dyn Error>> {
@@ -46,9 +54,14 @@ async fn init_state() -> Result<AppState, Box<dyn Error>> {
         Box::new(PlacesDbRepository::new(Arc::clone(&db_helper_arc)))
     };
 
+    let places_repository_arc = Arc::new(places_repository);
+    let create_place_use_case = CreatePlaceUseCase::new(Arc::clone(&places_repository_arc));
+    let list_places_query = ListPlacesQuery::new(Arc::clone(&places_repository_arc));
+
     Ok(AppState {
         stats_client: Arc::new(stats_client),
-        places_repository: Arc::new(places_repository),
+        create_place_use_case: Arc::new(Box::new(create_place_use_case)),
+        list_places_query: Arc::new(Box::new(list_places_query)),
     })
 }
 
@@ -66,11 +79,11 @@ async fn run_server() -> Result<(), Box<dyn Error>> {
     let app_state = init_state().await?;
 
     let app = Router::new()
-        .route("/", get(hello_handler))
-        .route("/{name}", get(move |name| named_handler(name)))
-        .route("/stats1/{name}", get(named_handler_stats1))
-        .route("/stats2/{name}", get(named_handler_stats2))
-        .route("/places/save", post(save_place))
+        // .route("/", get(hello_handler))
+        // .route("/{name}", get(move |name| named_handler(name)))
+        // .route("/stats1/{name}", get(named_handler_stats1))
+        // .route("/stats2/{name}", get(named_handler_stats2))
+        .route("/places/create", post(create_place))
         .route("/places/list", get(list_places))
         .with_state(app_state);
 

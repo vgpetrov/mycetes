@@ -10,3 +10,4 @@ serde = { version = "1.0.219" }
 dotenv = { version = "0.15.0" }
 stats = { path = "../stats"}
 repository = { path = "../repository"}
+domain = { path = "../domain"}
