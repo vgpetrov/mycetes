@@ -11,6 +11,7 @@ use axum::{Router};
 use axum::routing::{get, post};
 use std::sync::Arc;
 use dotenv::dotenv;
+use tracing::info;
 use domain::repository::PlacesRepository;
 use domain::stats::StatsSender;
 use repository::{db};
@@ -92,16 +93,23 @@ async fn run_server() -> Result<(), Box<dyn Error>> {
         .await
         .unwrap();
 
-    println!("listening on {}", listener.local_addr().unwrap());
+    info!("listening on {}", listener.local_addr().unwrap());
 
     axum::serve(listener, app).await.unwrap();
 
     Ok(())
 }
 
+fn init_logs() {
+    tracing_subscriber::fmt()
+        .with_env_filter("info") // or RUST_LOG env var
+        .init();
+}
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     dotenv().ok();
+    init_logs();
 
     let is_migration_enabled = env::var("ENABLE_MIGRATION")?.parse::<bool>()?;
     if is_migration_enabled {
