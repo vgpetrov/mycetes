@@ -3,11 +3,11 @@ use std::sync::Arc;
 use domain::repository::PlacesRepository;
 
 pub struct ListPlacesQuery {
-    place_repository: Arc<Box<dyn PlacesRepository + Send + Sync>>,
+    place_repository: Arc<dyn PlacesRepository + Send + Sync>,
 }
 
 impl ListPlacesQuery {
-    pub fn new(place_repository: Arc<Box<dyn PlacesRepository + Send + Sync>>) -> Self {
+    pub fn new(place_repository: Arc<dyn PlacesRepository + Send + Sync>) -> Self {
         ListPlacesQuery {
             place_repository
         }

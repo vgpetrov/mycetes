@@ -25,24 +25,24 @@ use crate::use_cases::CreatePlaceUseCase;
 
 #[derive(Clone)]
 struct AppState {
-    stats_client: Arc<Box<dyn StatsSender + Send + Sync>>,
-    create_place_use_case: Arc<Box<CreatePlaceUseCase>>,
-    list_places_query: Arc<Box<ListPlacesQuery>>
+    stats_client: Arc<dyn StatsSender + Send + Sync>,
+    create_place_use_case: Arc<CreatePlaceUseCase>,
+    list_places_query: Arc<ListPlacesQuery>
 }
 
 async fn init_state() -> Result<AppState, Box<dyn Error>> {
     let stats_mock = env::var("STATS_MOCK")?.parse::<bool>()?;
-    let stats_client: Box<dyn StatsSender + Send + Sync> = if stats_mock {
-        Box::new(StatsStub::new())
+    let stats_client: Arc<dyn StatsSender + Send + Sync> = if stats_mock {
+        Arc::new(StatsStub::new())
     } else{
         let host = env::var("STATS_HOST")?;
         let port = env::var("STATS_PORT")?;
-        Box::new(StatsClient::new(host, port.parse::<u16>()?))
+        Arc::new(StatsClient::new(host, port.parse::<u16>()?))
     };
 
     let db_mock = env::var("DB_MOCK")?.parse::<bool>()?;
-    let places_repository: Box<dyn PlacesRepository + Send + Sync> = if db_mock {
-        Box::new(MemPlaceRepository::new())
+    let places_repository: Arc<dyn PlacesRepository + Send + Sync> = if db_mock {
+        Arc::new(MemPlaceRepository::new())
     } else {
         let db_host = env::var("DB_HOST")?;
         let db_user = env::var("DB_USER")?;
@@ -52,7 +52,7 @@ async fn init_state() -> Result<AppState, Box<dyn Error>> {
         let mut db_helper = DbHelper::new(db_user, db_password, db_host, db_name);
         db_helper.init().await;
         let db_helper_arc = Arc::new(db_helper);
-        Box::new(PlacesDbRepository::new(Arc::clone(&db_helper_arc)))
+        Arc::new(PlacesDbRepository::new(Arc::clone(&db_helper_arc)))
     };
 
     let places_repository_arc = Arc::new(places_repository);
@@ -60,9 +60,9 @@ async fn init_state() -> Result<AppState, Box<dyn Error>> {
     let list_places_query = ListPlacesQuery::new(Arc::clone(&places_repository_arc));
 
     Ok(AppState {
-        stats_client: Arc::new(stats_client),
-        create_place_use_case: Arc::new(Box::new(create_place_use_case)),
-        list_places_query: Arc::new(Box::new(list_places_query)),
+        stats_client,
+        create_place_use_case: Arc::new(create_place_use_case),
+        list_places_query: Arc::new(list_places_query),
     })
 }
 
