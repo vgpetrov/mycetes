@@ -5,7 +5,6 @@ use crate::responses::PlaceResponse;
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::response::{Html, IntoResponse, Json, Response};
-use repository::Place;
 
 #[derive(Debug)]
 pub enum AppError {
@@ -72,17 +71,4 @@ pub async fn list_places(State(state): State<AppState>) -> Result<impl IntoRespo
         .collect();
 
     Ok((StatusCode::OK, Json(places_list)))
-}
-
-
-impl From<&Place> for PlaceResponse {
-    fn from(place: &Place) -> Self {
-        PlaceResponse {
-            id: place.id,
-            name: place.name.clone(),
-            user: place.user_id,
-            latitude: place.latitude,
-            longitude: place.longitude,
-        }
-    }
 }

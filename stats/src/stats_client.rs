@@ -1,5 +1,5 @@
 use datadog_statsd::Client;
-use crate::StatsSender;
+use domain::stats::StatsSender;
 
 pub struct StatsClient {
     statsd_client: Client

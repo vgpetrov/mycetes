@@ -1,5 +1,3 @@
-use std::error::Error;
-use async_trait::async_trait;
 use sqlx::FromRow;
 
 pub mod db;
@@ -15,8 +13,43 @@ pub struct Place {
     pub is_deleted: bool,
 }
 
-#[async_trait]
-pub trait PlacesRepository: Send + Sync {
-    async fn list_places(&self) -> Result<Vec<Place>, Box<dyn Error>>;
-    async fn save(&self, place: Place) -> Result<Place, Box<dyn Error>>;
+impl From<&Place> for domain::Place {
+    fn from(value: &Place) -> Self {
+        domain::Place {
+            id: value.id,
+            name: value.clone().name,
+            user_id: value.user_id,
+            latitude: value.latitude,
+            longitude: value.longitude,
+            metadata: String::from(""),
+            is_deleted: value.is_deleted
+        }
+    }
+}
+
+impl From<Place> for domain::Place {
+    fn from(value: Place) -> Self {
+        domain::Place {
+            id: value.id,
+            name: value.clone().name,
+            user_id: value.user_id,
+            latitude: value.latitude,
+            longitude: value.longitude,
+            metadata: String::from(""),
+            is_deleted: value.is_deleted
+        }
+    }
+}
+
+impl From<domain::Place> for Place {
+    fn from(value: domain::Place) -> Self {
+        Place {
+            id: value.id,
+            name: value.name,
+            user_id: value.user_id,
+            latitude: value.latitude,
+            longitude: value.longitude,
+            is_deleted: value.is_deleted,
+        }
+    }
 }

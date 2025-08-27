@@ -1,7 +1,8 @@
 use std::error::Error;
 use std::sync::{Arc, Mutex};
 use async_trait::async_trait;
-use crate::{Place, PlacesRepository};
+use domain::repository::PlacesRepository;
+use crate::{Place};
 
 pub struct MemPlaceRepository {
     datasource: Arc<Mutex<Vec<Place>>>,
@@ -15,17 +16,24 @@ impl MemPlaceRepository {
 
 #[async_trait]
 impl PlacesRepository for MemPlaceRepository {
-    async fn list_places(&self) -> Result<Vec<Place>, Box<dyn Error>> {
-        Ok(self.datasource.lock().unwrap().to_vec())
+    async fn list_places(&self) -> Result<Vec<domain::Place>, Box<dyn Error>> {
+        let vec = self.datasource.lock().unwrap().to_vec();
+        let result = vec.iter().map(|p| p.into()).collect();
+        Ok(result)
     }
 
-    async fn save(&self, place: Place) -> Result<Place, Box<dyn Error>> {
-        self
-            .datasource
+    async fn save(&self, place: domain::Place) -> Result<domain::Place, Box<dyn Error>> {
+        self.datasource
             .lock()
             .unwrap()
-            .push(place);
+            .push(place.into());
 
-        Ok(self.datasource.lock().unwrap().last().unwrap().clone())
+        let place = self.datasource
+            .lock()
+            .unwrap()
+            .last()
+            .unwrap()
+            .clone();
+        Ok(place.into())
     }
 }

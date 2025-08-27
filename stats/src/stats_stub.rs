@@ -1,4 +1,4 @@
-use crate::StatsSender;
+use domain::stats::StatsSender;
 
 pub struct StatsStub {}
 impl StatsStub {

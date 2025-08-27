@@ -1,4 +1,6 @@
 pub mod domain_event;
+pub mod stats;
+pub mod repository;
 
 pub struct User {
     pub name: String,
@@ -6,6 +8,7 @@ pub struct User {
 }
 
 pub struct Place {
+    pub id: Option<i64>,
     pub name: String,
     pub user_id: i64,
     pub latitude: f64,
