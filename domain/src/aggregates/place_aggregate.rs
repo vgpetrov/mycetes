@@ -8,14 +8,12 @@ use crate::repository::PlacesRepository;
 /// This struct follows Domain-Driven Design conventions and allows
 /// validating a `Place` before saving, recording events, and pulling domain events.
 pub struct PlaceAggregate {
-    place_repository: Arc<dyn PlacesRepository + Send + Sync>,
     event_buffer: Vec<DomainEvent>,
 }
 
 impl PlaceAggregate {
-    pub fn new(place_repository: Arc<dyn PlacesRepository + Send + Sync>) -> Self {
+    pub fn new() -> Self {
         PlaceAggregate {
-            place_repository,
             event_buffer: Vec::new(),
         }
     }

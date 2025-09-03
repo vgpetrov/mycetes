@@ -21,11 +21,13 @@ impl CreatePlaceUseCase {
     ) -> Result<domain::Place, Box<dyn Error>> {
         let place: Place = create_place_command.into();
 
-        let mut place_aggregate = PlaceAggregate::new(Arc::clone(&self.place_repository));
+        let mut place_aggregate = PlaceAggregate::new();
         place_aggregate.validate_before_save(place.clone());
+
+        let result = self.place_repository.save(place).await;
         self.publish_events(place_aggregate.pull_domain_events());
 
-        self.place_repository.save(place).await
+        result
     }
 
     fn publish_events(&self, events: Vec<DomainEvent>) {
