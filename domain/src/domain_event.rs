@@ -1,27 +1,20 @@
+use crate::Place;
 
-pub trait DomainEvent {
+pub enum DomainEvent {
+    PlaceSavedEvent(Place),
+    UserCreatedEvent(String),
 }
 
-pub struct PlaceSavedEvent {
-}
+impl DomainEvent {
 
-impl PlaceSavedEvent {
-    pub fn new() -> Self {
-        PlaceSavedEvent {}
+    fn handle(&self) {
+        match self {
+            DomainEvent::PlaceSavedEvent(place) => {
+
+            }
+            DomainEvent::UserCreatedEvent(user) => {
+
+            }
+        }
     }
-}
-
-impl DomainEvent for PlaceSavedEvent {
-}
-
-pub struct UserCreatedEvent {
-}
-
-impl UserCreatedEvent {
-    pub fn new() -> Self {
-        UserCreatedEvent {}
-    }
-}
-
-impl DomainEvent for UserCreatedEvent {
 }

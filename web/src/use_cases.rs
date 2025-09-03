@@ -1,6 +1,9 @@
 use crate::commands::CreatePlaceCommand;
 use std::error::Error;
 use std::sync::Arc;
+use domain::aggregates::place_aggregate::PlaceAggregate;
+use domain::domain_event::DomainEvent;
+use domain::Place;
 use domain::repository::PlacesRepository;
 
 pub struct CreatePlaceUseCase {
@@ -16,8 +19,17 @@ impl CreatePlaceUseCase {
         &self,
         create_place_command: CreatePlaceCommand,
     ) -> Result<domain::Place, Box<dyn Error>> {
-        let place = create_place_command.into();
+        let place: Place = create_place_command.into();
+
+        let mut place_aggregate = PlaceAggregate::new(Arc::clone(&self.place_repository));
+        place_aggregate.validate_before_save(place.clone());
+        self.publish_events(place_aggregate.pull_domain_events());
+
         self.place_repository.save(place).await
+    }
+
+    fn publish_events(&self, events: Vec<DomainEvent>) {
+        todo!("Create an event publisher")
     }
 }
 

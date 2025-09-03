@@ -14,3 +14,42 @@ docker-compose -f docker-compose.yml up --build
 `docker ps --format 'table {{.Names}}\t{{.Labels}}'`
 Look for labels like:
 com.docker.compose.project=projectA
+
+
+
+# Enum based polymorphism (closed polymorphism)
+```aiignore
+trait Repository {
+    fn list_places(&self) -> Vec<Place>;
+}
+
+struct MemRepository {}
+struct DbRepository {}
+
+impl Repository for MemRepository {
+    fn list_places(&self) -> Vec<Place> {
+        todo!()
+    }
+}
+
+impl Repository for DbRepository {
+    fn list_places(&self) -> Vec<Place> {
+        todo!()
+    }
+}
+
+enum Repo {
+    Mem(MemRepository),
+    Db(DbRepository)
+}
+
+impl Repo {
+
+    fn list_places(&self) -> Vec<Place> {
+        match self {
+            Repo::Mem(r) => { r.list_places()}
+            Repo::Db(r) => { r.list_places()}
+        }
+    }
+}
+```
