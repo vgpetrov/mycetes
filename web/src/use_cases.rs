@@ -3,7 +3,6 @@ use std::error::Error;
 use std::sync::Arc;
 use domain::aggregates::place_aggregate::PlaceAggregate;
 use domain::domain_event::DomainEvent;
-use domain::Place;
 use domain::repository::PlacesRepository;
 
 pub struct CreatePlaceUseCase {
@@ -19,7 +18,7 @@ impl CreatePlaceUseCase {
         &self,
         create_place_command: CreatePlaceCommand,
     ) -> Result<domain::Place, Box<dyn Error>> {
-        let place: Place = create_place_command.into();
+        let place: domain::Place = create_place_command.into();
 
         let mut place_aggregate = PlaceAggregate::new();
         place_aggregate.validate_before_save(place.clone());

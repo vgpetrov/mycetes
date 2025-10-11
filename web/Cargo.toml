@@ -3,6 +3,13 @@ name = "web"
 version = "0.1.0"
 edition = "2024"
 
+[profile.release]
+opt-level = "z"     # optimize for size (use "s" for balance, "z" for smallest)
+lto = true          # enable link-time optimization
+codegen-units = 1   # better optimizations, slower build
+panic = "abort"     # smaller binary, no unwinding
+strip = true        # automatically strip symbols (cargo 1.70+)
+
 [dependencies]
 axum = { version = "0.8.4"}
 tokio = { version = "1.47.0", features = ["full"] }

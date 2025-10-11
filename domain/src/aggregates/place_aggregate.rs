@@ -1,7 +1,5 @@
-use std::sync::Arc;
 use crate::domain_event::{DomainEvent};
 use crate::Place;
-use crate::repository::PlacesRepository;
 
 /// Represents a place aggregate that holds a repository and a buffer of domain events.
 ///
