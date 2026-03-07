@@ -1,10 +1,10 @@
 use crate::AppState;
 use crate::places_handler::AppError::DbError;
-use crate::requests::CreatePlaceRequest;
-use crate::responses::PlaceResponse;
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::response::{Html, IntoResponse, Json, Response};
+use crate::requests::CreatePlaceRequest;
+use crate::responses::PlaceResponse;
 
 #[derive(Debug)]
 pub enum AppError {

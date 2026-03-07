@@ -3,3 +3,6 @@ Cargo.lock
 /target
 /misc/docker/grafana_data
 /misc/docker/influxdb_data
+
+save.http
+AGENTS.md
