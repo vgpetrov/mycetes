@@ -15,9 +15,7 @@ use domain::stats::StatsSender;
 use dotenv::dotenv;
 use repository::db;
 use std::env;
-use std::env::VarError;
 use std::error::Error;
-use std::str::ParseBoolError;
 use std::sync::Arc;
 use tracing::info;
 
@@ -50,14 +48,9 @@ async fn run_server() -> Result<(), Box<dyn Error>> {
         .route("/places/list", get(list_places))
         .with_state(app_state);
 
-    let listener = tokio::net::TcpListener::bind(("0.0.0.0", 3002))
-        .await
-        .unwrap();
-
-    info!("listening on {}", listener.local_addr().unwrap());
-
-    axum::serve(listener, app).await.unwrap();
-
+    let listener = tokio::net::TcpListener::bind(("0.0.0.0", 3002)).await?;
+    info!("listening on {}", listener.local_addr()?);
+    axum::serve(listener, app).await?;
     Ok(())
 }
 
