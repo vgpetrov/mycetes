@@ -1,5 +1,3 @@
-use crate::repository::PlacesRepository;
-
 pub mod domain_event;
 pub mod repository;
 pub mod stats;

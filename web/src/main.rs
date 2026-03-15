@@ -8,7 +8,6 @@ mod use_cases;
 
 use crate::places_handler::{create_place, list_places};
 use crate::queries::ListPlacesQuery;
-use crate::use_cases::CreatePlaceUseCase;
 use axum::Router;
 use axum::routing::{get, post};
 use domain::stats::StatsSender;
@@ -18,12 +17,15 @@ use std::env;
 use std::error::Error;
 use std::sync::Arc;
 use tracing::info;
+use crate::use_cases::create_user_usecase::CreateUserUseCase;
+use crate::use_cases::CreatePlaceUseCase;
 
 #[derive(Clone)]
 struct AppState {
     stats_client: Arc<dyn StatsSender + Send + Sync>,
     create_place_use_case: Arc<CreatePlaceUseCase>,
     list_places_query: Arc<ListPlacesQuery>,
+    create_user_use_case: Arc<CreateUserUseCase>
 }
 
 async fn run_migration() -> Result<(), Box<dyn Error>> {
