@@ -23,7 +23,7 @@ impl SpotsRepository for SpotsDbRepository {
         let spot = sqlx::query_as::<_, Spot>(
             r#"
                 SELECT id, name, user_id, latitude, longitude, is_deleted
-                FROM place
+                FROM spot
                 WHERE is_deleted = false
                 ORDER BY id
                 "#,
@@ -42,7 +42,7 @@ impl SpotsRepository for SpotsDbRepository {
 
         let spot = sqlx::query_as::<_, Spot>(
             r#"
-                INSERT INTO place (name, user_id, latitude, longitude)
+                INSERT INTO spot (name, user_id, latitude, longitude)
                 VALUES ($1, $2, $3, $4)
                 RETURNING id, name, user_id, latitude, longitude, is_deleted
             "#,
