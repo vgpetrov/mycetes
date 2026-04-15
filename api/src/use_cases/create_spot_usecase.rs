@@ -31,7 +31,7 @@ impl CreateSpotUseCase {
     }
 
     fn publish_events(&self, events: Vec<DomainEvent>) {
-        todo!("Create an event publisher")
+        // todo!("Create an event publisher")
     }
 }
 

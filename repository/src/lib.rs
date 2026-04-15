@@ -10,7 +10,7 @@ pub struct Spot {
     pub user_id: i64,
     pub latitude: f64,
     pub longitude: f64,
-    pub is_deleted: bool,
+    pub deleted: bool,
 }
 
 impl From<&Spot> for domain::Spot {
@@ -22,7 +22,7 @@ impl From<&Spot> for domain::Spot {
             latitude: value.latitude,
             longitude: value.longitude,
             metadata: String::from(""),
-            is_deleted: value.is_deleted
+            is_deleted: value.deleted
         }
     }
 }
@@ -36,7 +36,7 @@ impl From<Spot> for domain::Spot {
             latitude: value.latitude,
             longitude: value.longitude,
             metadata: String::from(""),
-            is_deleted: value.is_deleted
+            is_deleted: value.deleted
         }
     }
 }
@@ -49,7 +49,7 @@ impl From<domain::Spot> for Spot {
             user_id: value.user_id,
             latitude: value.latitude,
             longitude: value.longitude,
-            is_deleted: value.is_deleted,
+            deleted: value.is_deleted,
         }
     }
 }
