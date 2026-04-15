@@ -1,5 +1,7 @@
 use std::error::Error;
 use sqlx::postgres::PgPoolOptions;
+use tracing::{info, warn};
+use anyhow::{Result, Context};
 
 pub struct DbHelper {
     pool: Option<sqlx::Pool<sqlx::Postgres>>,
@@ -20,7 +22,7 @@ impl DbHelper {
         }
     }
 
-    pub async fn init(&mut self) {
+    pub async fn init(&mut self) -> Result<()> {
         let postgres_connection_string = format!(
             "postgres://{}:{}@{}/{}",
             self.user, self.password, self.db_host, self.db_name
@@ -28,18 +30,12 @@ impl DbHelper {
 
         let pool = PgPoolOptions::new()
             .max_connections(50)
-            // .connect("postgres://myuser:mypassword@192.168.1.3/mydb")
-            .connect(postgres_connection_string.as_str())
-            .await;
+            .connect(&postgres_connection_string)
+            .await
+            .context("Failed to initialize database connection")?;
 
-        match pool {
-            Ok(p) => {
-                self.pool = Some(p);
-            }
-            Err(e) => {
-                panic!("Database initialization error: {}", e);
-            }
-        }
+        self.pool = Some(pool);
+        Ok(())
     }
 
     pub fn get_pool(&self) -> Result<&sqlx::Pool<sqlx::Postgres>, Box<dyn Error>> {
