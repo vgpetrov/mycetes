@@ -1,3 +1,3 @@
-mod place;
+mod spot;
 
-pub use place::CreatePlaceRequest;
+pub use spot::CreateSpotRequest;

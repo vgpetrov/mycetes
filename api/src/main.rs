@@ -1,13 +1,13 @@
 mod commands;
-mod places_handler;
+mod spot_handler;
 mod queries;
 mod requests;
 mod responses;
 mod state_manager;
 mod use_cases;
 
-use crate::places_handler::{create_place, list_places};
-use crate::queries::ListPlacesQuery;
+use crate::spot_handler::{create_spot, list_spot};
+use crate::queries::ListSpotsQuery;
 use axum::Router;
 use axum::routing::{get, post};
 use domain::stats::StatsSender;
@@ -18,13 +18,13 @@ use std::error::Error;
 use std::sync::Arc;
 use tracing::info;
 use crate::use_cases::create_user_usecase::CreateUserUseCase;
-use crate::use_cases::CreatePlaceUseCase;
+use crate::use_cases::CreateSpotUseCase;
 
 #[derive(Clone)]
 struct AppState {
     stats_client: Arc<dyn StatsSender + Send + Sync>,
-    create_place_use_case: Arc<CreatePlaceUseCase>,
-    list_places_query: Arc<ListPlacesQuery>,
+    create_spot_use_case: Arc<CreateSpotUseCase>,
+    list_spots_query: Arc<ListSpotsQuery>,
     create_user_use_case: Arc<CreateUserUseCase>
 }
 
@@ -46,8 +46,8 @@ async fn run_server() -> Result<(), Box<dyn Error>> {
         // .route("/{name}", get(move |name| named_handler(name)))
         // .route("/stats1/{name}", get(named_handler_stats1))
         // .route("/stats2/{name}", get(named_handler_stats2))
-        .route("/places/create", post(create_place))
-        .route("/places/list", get(list_places))
+        .route("/spots/create", post(create_spot))
+        .route("/spots/list", get(list_spot))
         .with_state(app_state);
 
     let listener = tokio::net::TcpListener::bind(("0.0.0.0", 3002)).await?;

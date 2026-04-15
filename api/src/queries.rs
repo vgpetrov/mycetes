@@ -1,21 +1,21 @@
 use std::error::Error;
 use std::sync::Arc;
-use domain::repository::PlacesRepository;
+use domain::repository::SpotsRepository;
 
-pub struct ListPlacesQuery {
-    place_repository: Arc<dyn PlacesRepository + Send + Sync>,
+pub struct ListSpotsQuery {
+    spot_repository: Arc<dyn SpotsRepository + Send + Sync>,
 }
 
-impl ListPlacesQuery {
-    pub fn new(place_repository: Arc<dyn PlacesRepository + Send + Sync>) -> Self {
-        ListPlacesQuery {
-            place_repository
+impl ListSpotsQuery {
+    pub fn new(spot_repository: Arc<dyn SpotsRepository + Send + Sync>) -> Self {
+        ListSpotsQuery {
+            spot_repository
         }
     }
 
-    pub async fn list_places(&self) -> Result<Vec<domain::Place>, Box<dyn Error>> {
-        self.place_repository
-            .list_places()
+    pub async fn list_spots(&self) -> Result<Vec<domain::Spot>, Box<dyn Error>> {
+        self.spot_repository
+            .list_spots()
             .await
     }
 }

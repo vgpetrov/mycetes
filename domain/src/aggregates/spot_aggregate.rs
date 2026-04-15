@@ -1,23 +1,23 @@
 use crate::domain_event::{DomainEvent};
-use crate::Place;
+use crate::Spot;
 
-/// Represents a place aggregate that holds a repository and a buffer of domain events.
+/// Represents a spot aggregate that holds a repository and a buffer of domain events.
 ///
 /// This struct follows Domain-Driven Design conventions and allows
-/// validating a `Place` before saving, recording events, and pulling domain events.
-pub struct PlaceAggregate {
+/// validating a `Spot` before saving, recording events, and pulling domain events.
+pub struct SpotAggregate {
     event_buffer: Vec<DomainEvent>,
 }
 
-impl PlaceAggregate {
+impl SpotAggregate {
     pub fn new() -> Self {
-        PlaceAggregate {
+        SpotAggregate {
             event_buffer: Vec::new(),
         }
     }
 
-    pub fn validate_before_save(&mut self, place: Place) {
-        self.record_event(DomainEvent::PlaceSavedEvent(place))
+    pub fn validate_before_save(&mut self, spot: Spot) {
+        self.record_event(DomainEvent::SpotSavedEvent(spot))
     }
 
     fn record_event(&mut self, event: DomainEvent) {

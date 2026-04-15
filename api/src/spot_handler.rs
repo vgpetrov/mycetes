@@ -1,10 +1,10 @@
 use crate::AppState;
-use crate::places_handler::AppError::DbError;
+use crate::spot_handler::AppError::DbError;
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::response::{Html, IntoResponse, Json, Response};
-use crate::requests::CreatePlaceRequest;
-use crate::responses::PlaceResponse;
+use crate::requests::CreateSpotRequest;
+use crate::responses::SpotResponse;
 
 #[derive(Debug)]
 pub enum AppError {
@@ -45,30 +45,30 @@ impl IntoResponse for AppError {
 //     Html(s)
 // }
 
-pub async fn create_place(
+pub async fn create_spot(
     State(state): State<AppState>,
-    Json(payload): Json<CreatePlaceRequest>,
+    Json(payload): Json<CreateSpotRequest>,
 ) -> Result<impl IntoResponse, AppError> {
-    let create_place_command = payload.into();
+    let create_spot_command = payload.into();
 
     state
-        .create_place_use_case
-        .create_place(create_place_command)
+        .create_spot_use_case
+        .create_spot(create_spot_command)
         .await
         .map_err(|e| DbError(e.to_string()))?;
 
     Ok((StatusCode::CREATED, String::from("Done saved!")))
 }
 
-pub async fn list_places(State(state): State<AppState>) -> Result<impl IntoResponse, AppError> {
-    let places_list: Vec<PlaceResponse> = state
-        .list_places_query
-        .list_places()
+pub async fn list_spot(State(state): State<AppState>) -> Result<impl IntoResponse, AppError> {
+    let spots_list: Vec<SpotResponse> = state
+        .list_spots_query
+        .list_spots()
         .await
         .map_err(|e| DbError(e.to_string()))?
         .iter()
-        .map(|place| place.into())
+        .map(|spot| spot.into())
         .collect();
 
-    Ok((StatusCode::OK, Json(places_list)))
+    Ok((StatusCode::OK, Json(spots_list)))
 }

@@ -1,13 +1,13 @@
 use crate::AppState;
-use crate::queries::ListPlacesQuery;
+use crate::queries::ListSpotsQuery;
 use crate::use_cases::create_user_usecase::CreateUserUseCase;
-use crate::use_cases::{CreatePlaceUseCase, create_user_usecase};
-use domain::repository::{PlacesRepository, UserRepository};
+use crate::use_cases::{CreateSpotUseCase, create_user_usecase};
+use domain::repository::{SpotsRepository, UserRepository};
 use domain::stats::StatsSender;
 use repository::db::db_helper::DbHelper;
-use repository::db::places_db_repository::PlacesDbRepository;
+use repository::db::spots_db_repository::SpotsDbRepository;
 use repository::db::user_db_repository::UserDbRepository;
-use repository::mem::places_memory_repository::MemPlaceRepository;
+use repository::mem::spots_memory_repository::MemSpotRepository;
 use repository::mem::user_memory_repository::UserMemoryRepository;
 use stats::stats_client::StatsClient;
 use stats::stats_stub::StatsStub;
@@ -27,7 +27,7 @@ pub async fn init_state() -> Result<AppState, Box<dyn Error>> {
 
     let db_mock = env::var("DB_MOCK")?.parse::<bool>()?;
     let repositories: (
-        Arc<dyn PlacesRepository + Send + Sync>,
+        Arc<dyn SpotsRepository + Send + Sync>,
         Arc<dyn UserRepository + Send + Sync>,
     ) = if !db_mock {
         let db_host = env::var("DB_HOST")?;
@@ -40,18 +40,18 @@ pub async fn init_state() -> Result<AppState, Box<dyn Error>> {
         let db_helper_arc = Arc::new(db_helper);
 
         (
-            Arc::new(PlacesDbRepository::new(Arc::clone(&db_helper_arc))),
+            Arc::new(SpotsDbRepository::new(Arc::clone(&db_helper_arc))),
             Arc::new(UserDbRepository::new(Arc::clone(&db_helper_arc))),
         )
     } else {
         (
-            Arc::new(MemPlaceRepository::new()),
+            Arc::new(MemSpotRepository::new()),
             Arc::new(UserMemoryRepository::new()),
         )
     };
 
-    let create_place_use_case = CreatePlaceUseCase::new(repositories.0.clone());
-    let list_places_query = ListPlacesQuery::new(repositories.0.clone());
+    let create_spot_use_case = CreateSpotUseCase::new(repositories.0.clone());
+    let list_spots_query = ListSpotsQuery::new(repositories.0.clone());
     let create_user_use_case = CreateUserUseCase::new(
         repositories.1.clone(),
         stats_client.clone()
@@ -59,8 +59,8 @@ pub async fn init_state() -> Result<AppState, Box<dyn Error>> {
 
     Ok(AppState {
         stats_client,
-        create_place_use_case: Arc::new(create_place_use_case),
-        list_places_query: Arc::new(list_places_query),
+        create_spot_use_case: Arc::new(create_spot_use_case),
+        list_spots_query: Arc::new(list_spots_query),
         create_user_use_case: Arc::new(create_user_use_case),
     })
 }

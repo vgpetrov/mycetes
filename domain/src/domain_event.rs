@@ -1,7 +1,7 @@
-use crate::Place;
+use crate::Spot;
 
 pub enum DomainEvent {
-    PlaceSavedEvent(Place),
+    SpotSavedEvent(Spot),
     UserCreatedEvent(String),
 }
 
@@ -9,7 +9,7 @@ impl DomainEvent {
 
     fn handle(&self) {
         match self {
-            DomainEvent::PlaceSavedEvent(place) => {
+            DomainEvent::SpotSavedEvent(spot) => {
 
             }
             DomainEvent::UserCreatedEvent(user) => {

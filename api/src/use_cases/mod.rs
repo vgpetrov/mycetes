@@ -1,4 +1,4 @@
-mod create_place_usecase;
+mod create_spot_usecase;
 pub mod create_user_usecase;
 
-pub use create_place_usecase::CreatePlaceUseCase;
+pub use create_spot_usecase::CreateSpotUseCase;

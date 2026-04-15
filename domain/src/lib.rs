@@ -9,7 +9,7 @@ pub struct User {
 }
 
 #[derive(Clone)]
-pub struct Place {
+pub struct Spot {
     pub id: Option<i64>,
     pub name: String,
     pub user_id: i64,

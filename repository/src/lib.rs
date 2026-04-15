@@ -4,7 +4,7 @@ pub mod db;
 pub mod mem;
 
 #[derive(Debug, FromRow, Clone)]
-pub struct Place {
+pub struct Spot {
     pub id: Option<i64>,
     pub name: String,
     pub user_id: i64,
@@ -13,9 +13,9 @@ pub struct Place {
     pub is_deleted: bool,
 }
 
-impl From<&Place> for domain::Place {
-    fn from(value: &Place) -> Self {
-        domain::Place {
+impl From<&Spot> for domain::Spot {
+    fn from(value: &Spot) -> Self {
+        domain::Spot {
             id: value.id,
             name: value.clone().name,
             user_id: value.user_id,
@@ -27,9 +27,9 @@ impl From<&Place> for domain::Place {
     }
 }
 
-impl From<Place> for domain::Place {
-    fn from(value: Place) -> Self {
-        domain::Place {
+impl From<Spot> for domain::Spot {
+    fn from(value: Spot) -> Self {
+        domain::Spot {
             id: value.id,
             name: value.clone().name,
             user_id: value.user_id,
@@ -41,9 +41,9 @@ impl From<Place> for domain::Place {
     }
 }
 
-impl From<domain::Place> for Place {
-    fn from(value: domain::Place) -> Self {
-        Place {
+impl From<domain::Spot> for Spot {
+    fn from(value: domain::Spot) -> Self {
+        Spot {
             id: value.id,
             name: value.name,
             user_id: value.user_id,

@@ -1,1 +1,1 @@
-pub mod place_aggregate;
+pub mod spot_aggregate;
