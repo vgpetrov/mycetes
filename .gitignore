@@ -1,8 +1,19 @@
+# IDEs
 .idea
 Cargo.lock
 /target
 /misc/docker/grafana_data
 /misc/docker/influxdb_data
+.vscode/
 
+# OS
+.DS_Store
+
+# Other
 save.http
 AGENTS.md
+
+# FE
+node_modules/
+.angular/
+dist/
