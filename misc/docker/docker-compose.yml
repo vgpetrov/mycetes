@@ -61,7 +61,7 @@ services:
       influxdb:
         condition: service_healthy
     volumes:
-      - ./telegraf.conf:/tmp/telegraf.conf:ro
+      - ./telegraf-real.conf:/tmp/telegraf.conf:ro
     command: --config /tmp/telegraf.conf
     ports:
       - "8125:8125/udp"
