@@ -60,15 +60,33 @@ services:
     depends_on:
       influxdb:
         condition: service_healthy
-    configs:
-      - source: telegraf_conf
-        target: /etc/telegraf/telegraf.conf
-        mode: 0444
+    entrypoint: ["/bin/sh", "-ec"]
+    command: |
+      cat >/tmp/telegraf.conf <<'EOF'
+      [global_tags]
+  
+      [agent]
+        interval = "10s"
+        round_interval = true
+  
+      [[outputs.influxdb_v2]]
+        urls = ["http://influxdb:8086"]
+        token = "admintoken123"
+        organization = "my-org"
+        bucket = "stats"
+  
+      [[inputs.statsd]]
+        service_address = ":8125"
+        datadog_extensions = true
+      EOF
+  
+      exec telegraf --config /tmp/telegraf.conf
     ports:
       - "8125:8125/udp"
       - "8126:8126"
     networks:
       - monitor-mycetes-net
+
   grafana:
     image: grafana/grafana
     container_name: mycetes-grafana
@@ -88,10 +106,6 @@ volumes:
   influxdb_data:
   grafana_data:
   pg_data:
-
-configs:
-  telegraf_conf:
-    file: ./telegraf.conf
 
 networks:
   monitor-mycetes-net:
