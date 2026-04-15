@@ -60,15 +60,15 @@ services:
     depends_on:
       influxdb:
         condition: service_healthy
-    volumes:
-      - ./:/config:ro
-    command: --config /config/telegraf.conf
+    configs:
+      - source: telegraf_conf
+        target: /etc/telegraf/telegraf.conf
+        mode: 0444
     ports:
       - "8125:8125/udp"
       - "8126:8126"
     networks:
       - monitor-mycetes-net
-
   grafana:
     image: grafana/grafana
     container_name: mycetes-grafana
@@ -88,6 +88,10 @@ volumes:
   influxdb_data:
   grafana_data:
   pg_data:
+
+configs:
+  telegraf_conf:
+    file: ./telegraf.conf
 
 networks:
   monitor-mycetes-net:
