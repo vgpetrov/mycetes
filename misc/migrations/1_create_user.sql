@@ -1,4 +1,4 @@
-CREATE TABLE user (
+CREATE TABLE "user" (
     id bigserial PRIMARY KEY,
     name text NOT NULL,
     email text NOT NULL,
@@ -7,4 +7,4 @@ CREATE TABLE user (
     deleted boolean NOT NULL DEFAULT false
 );
 
-CREATE INDEX ON user (email);
+CREATE INDEX ON "user" (email);
