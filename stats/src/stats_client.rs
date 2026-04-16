@@ -14,7 +14,7 @@ impl StatsClient {
 }
 
 impl StatsSender for StatsClient {
-    fn incr(&self) {
-        self.statsd_client.incr("hello", &Some(vec!["abc", "def", "ghi"]));
+    fn incr(&self, stat_name: &str, tags: Vec<&str>) {
+        self.statsd_client.incr(stat_name, &Some(tags));
     }
 }

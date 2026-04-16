@@ -8,7 +8,7 @@ impl StatsStub {
 }
 
 impl StatsSender for StatsStub {
-    fn incr(&self) {
+    fn incr(&self, stat_name: &str, tags: Vec<&str>) {
         println!("incr");
     }
 }

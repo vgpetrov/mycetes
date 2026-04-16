@@ -12,6 +12,7 @@ Cargo.lock
 # Other
 save.http
 AGENTS.md
+.env
 
 # FE
 node_modules/

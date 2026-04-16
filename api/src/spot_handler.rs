@@ -57,6 +57,8 @@ pub async fn create_spot(
         .await
         .map_err(|e| DbError(e.to_string()))?;
 
+    state.stats_client.incr("create_spot", vec![]);
+
     Ok((StatusCode::CREATED, String::from("Done saved!")))
 }
 
