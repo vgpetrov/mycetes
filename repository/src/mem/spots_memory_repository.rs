@@ -3,6 +3,7 @@ use async_trait::async_trait;
 use domain::repository::SpotsRepository;
 use std::error::Error;
 use std::sync::{Arc, Mutex};
+use sqlx::types::chrono::{DateTime, Utc};
 
 pub struct MemSpotRepository {
     datasource: Arc<Mutex<Vec<SpotEntity>>>,
@@ -25,7 +26,28 @@ impl SpotsRepository for MemSpotRepository {
     }
 
     async fn save(&self, spot: domain::Spot) -> Result<domain::Spot, Box<dyn Error>> {
-        self.datasource.lock().unwrap().push(spot.into());
+        let next_id = (self.datasource.lock().unwrap().len() as i64) + 1;
+
+        let metadata = match spot.metadata {
+            None => { String::from("{}") }
+            Some(meta) => { meta }
+        };
+
+        let spot_entity = SpotEntity {
+            id: next_id,
+            pub_id: spot.pub_id,
+            name: spot.name,
+            user_id: spot.user_id,
+            latitude: spot.latitude,
+            longitude: spot.longitude,
+            created_at: DateTime::<Utc>::from(spot.created_at),
+            updated_at: DateTime::<Utc>::from(spot.updated_at),
+            metadata,
+            approved_by: None,
+            deleted: false,
+        };
+
+        self.datasource.lock().unwrap().push(spot_entity);
 
         let spot = self.datasource.lock().unwrap().last().unwrap().clone();
         Ok(spot.into())

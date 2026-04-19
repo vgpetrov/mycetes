@@ -1,10 +1,9 @@
-use crate::SpotEntity;
+use crate::{SpotEntity, SpotLightEntity};
 use crate::db::db_helper::DbHelper;
 use async_trait::async_trait;
 use domain::repository::SpotsRepository;
 use std::error::Error;
 use std::sync::Arc;
-use anyhow::Context;
 use tracing::log;
 
 pub struct SpotsDbRepository {
@@ -41,13 +40,15 @@ impl SpotsRepository for SpotsDbRepository {
     }
 
     async fn save(&self, mut spot: domain::Spot) -> Result<domain::Spot, Box<dyn Error>> {
-        let pool = self.db_helper.get_pool()?;
+        let pool = self.db_helper.get_pool()
+            .inspect_err(|e| log::error!("Failed to get pool: {}", e))
+            ?;
 
-        let spot_entity = sqlx::query_as::<_, SpotEntity>(
+        let spot_entity = sqlx::query_as::<_, SpotLightEntity>(
             r#"
                 INSERT INTO spot (name, pub_id, user_id, latitude, longitude, metadata)
                 VALUES ($1, $2, $3, $4, $5, $6)
-                RETURNING id, pub_id, name, user_id, latitude, longitude, deleted, created_at, updated_at, metadata
+                RETURNING id, pub_id, name, user_id, latitude, longitude, deleted, created_at, updated_at, metadata, approved_by
             "#,
         )
             .bind(&spot.name)
@@ -58,8 +59,7 @@ impl SpotsRepository for SpotsDbRepository {
             .bind("{}")
             .fetch_one(pool)
             .await
-            // .context("Failed to insert spot")?;
-            .inspect_err(|e| log::error!("Failed to insert spot 2: {}", e))
+            .inspect_err(|e| log::error!("Failed to insert spot: {}", e))
             ?;
 
         Ok(spot)
