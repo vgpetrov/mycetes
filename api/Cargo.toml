@@ -20,3 +20,4 @@ tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 stats = { path = "../stats"}
 repository = { path = "../repository"}
 domain = { path = "../domain"}
+uuid = { version = "1.23.1", features = ["v4"] }

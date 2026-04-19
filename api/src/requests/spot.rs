@@ -5,4 +5,5 @@ pub struct CreateSpotRequest {
     pub user: i64,
     pub latitude: f64,
     pub longitude: f64,
+    pub metadata: Option<String>,
 }

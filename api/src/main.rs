@@ -5,6 +5,7 @@ mod requests;
 mod responses;
 mod state_manager;
 mod use_cases;
+pub mod app_errors;
 
 use crate::spot_handler::{create_spot, list_spot};
 use crate::queries::ListSpotsQuery;
@@ -58,6 +59,7 @@ async fn run_server() -> Result<(), Box<dyn Error>> {
 
 fn init_logs() {
     tracing_subscriber::fmt()
+        .with_line_number(true)
         .with_env_filter("info") // or RUST_LOG env var
         .init();
 }

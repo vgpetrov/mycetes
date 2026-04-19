@@ -1,3 +1,5 @@
+use std::time::SystemTime;
+
 pub mod domain_event;
 pub mod repository;
 pub mod stats;
@@ -10,11 +12,14 @@ pub struct User {
 
 #[derive(Clone)]
 pub struct Spot {
-    pub id: Option<i64>,
+    pub pub_id: String,
     pub name: String,
     pub user_id: i64,
     pub latitude: f64,
     pub longitude: f64,
-    pub metadata: String,
-    pub is_deleted: bool,
+    pub created_at: SystemTime,
+    pub updated_at: SystemTime,
+    pub metadata: Option<String>,
+    pub approved_by: Option<i64>,
+    pub deleted: bool,
 }

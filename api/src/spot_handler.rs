@@ -1,23 +1,13 @@
 use crate::AppState;
+use crate::requests::CreateSpotRequest;
+use crate::responses::SpotResponse;
 use crate::spot_handler::AppError::DbError;
+use crate::use_cases::CreateSpotError;
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use axum::response::{Html, IntoResponse, Json, Response};
-use crate::requests::CreateSpotRequest;
-use crate::responses::SpotResponse;
-
-#[derive(Debug)]
-pub enum AppError {
-    DbError(String),
-}
-
-impl IntoResponse for AppError {
-    fn into_response(self) -> Response {
-        match self {
-            AppError::DbError(msg) => (StatusCode::INTERNAL_SERVER_ERROR, msg).into_response(),
-        }
-    }
-}
+use tracing::log;
+use crate::app_errors::AppError;
 
 // pub async fn hello_handler() -> Html<&'static str> {
 //     Html("<h1>Hello, World!</h1>")
@@ -55,11 +45,14 @@ pub async fn create_spot(
         .create_spot_use_case
         .create_spot(create_spot_command)
         .await
-        .map_err(|e| DbError(e.to_string()))?;
+        .map_err(|e| match e {
+            CreateSpotError::Db(msg) => AppError::DbError(msg),
+            CreateSpotError::Validation(msg) => AppError::ValidationError(msg),
+        })?;
 
     state.stats_client.incr("create_spot", vec![]);
 
-    Ok((StatusCode::CREATED, String::from("Done saved!")))
+    Ok((StatusCode::CREATED, String::from("Ok")))
 }
 
 pub async fn list_spot(State(state): State<AppState>) -> Result<impl IntoResponse, AppError> {
