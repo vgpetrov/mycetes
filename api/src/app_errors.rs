@@ -7,6 +7,7 @@ use serde::Serialize;
 pub enum AppError {
     DbError(String),
     ValidationError(String),
+    MultipartError(String)
 }
 
 #[derive(Serialize)]
@@ -26,6 +27,11 @@ impl IntoResponse for AppError {
                 StatusCode::INTERNAL_SERVER_ERROR,
                 Json(ErrorResponse { error: message }),
             ).into_response(),
+
+            AppError::MultipartError(message) => (
+                StatusCode::BAD_REQUEST,
+                Json(ErrorResponse { error: message }),
+            ).into_response()
         }
     }
 }

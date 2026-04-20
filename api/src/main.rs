@@ -1,15 +1,18 @@
+pub mod app_errors;
 mod commands;
-mod spot_handler;
 mod queries;
 mod requests;
 mod responses;
+mod spot_handler;
 mod state_manager;
 mod use_cases;
-pub mod app_errors;
 
-use crate::spot_handler::{create_spot, list_spot};
 use crate::queries::ListSpotsQuery;
+use crate::spot_handler::{create_spot, list_spot};
+use crate::use_cases::CreateSpotUseCase;
+use crate::use_cases::create_user_usecase::CreateUserUseCase;
 use axum::Router;
+use axum::extract::DefaultBodyLimit;
 use axum::routing::{get, post};
 use domain::stats::StatsSender;
 use dotenv::dotenv;
@@ -18,15 +21,13 @@ use std::env;
 use std::error::Error;
 use std::sync::Arc;
 use tracing::info;
-use crate::use_cases::create_user_usecase::CreateUserUseCase;
-use crate::use_cases::CreateSpotUseCase;
 
 #[derive(Clone)]
 struct AppState {
     stats_client: Arc<dyn StatsSender + Send + Sync>,
     create_spot_use_case: Arc<CreateSpotUseCase>,
     list_spots_query: Arc<ListSpotsQuery>,
-    create_user_use_case: Arc<CreateUserUseCase>
+    create_user_use_case: Arc<CreateUserUseCase>,
 }
 
 async fn run_migration() -> Result<(), Box<dyn Error>> {
@@ -47,7 +48,11 @@ async fn run_server() -> Result<(), Box<dyn Error>> {
         // .route("/{name}", get(move |name| named_handler(name)))
         // .route("/stats1/{name}", get(named_handler_stats1))
         // .route("/stats2/{name}", get(named_handler_stats2))
-        .route("/spots/create", post(create_spot))
+        .route(
+            "/spots/create",
+            post(create_spot)
+                .layer(DefaultBodyLimit::max(10 * 1024 * 1024)), // 10Mb
+        )
         .route("/spots/list", get(list_spot))
         .with_state(app_state);
 
@@ -68,7 +73,7 @@ fn init_logs() {
 async fn main() -> Result<(), Box<dyn Error>> {
     dotenv().ok();
     init_logs();
-    
+
     let is_migration_enabled = env::var("ENABLE_MIGRATION")?.parse::<bool>()?;
     if is_migration_enabled {
         run_migration().await?;

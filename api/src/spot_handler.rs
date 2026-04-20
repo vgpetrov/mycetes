@@ -1,13 +1,12 @@
 use crate::AppState;
+use crate::app_errors::AppError;
 use crate::requests::CreateSpotRequest;
 use crate::responses::SpotResponse;
 use crate::spot_handler::AppError::DbError;
 use crate::use_cases::CreateSpotError;
-use axum::extract::{Path, State};
+use axum::extract::{Multipart, Path, State};
 use axum::http::StatusCode;
 use axum::response::{Html, IntoResponse, Json, Response};
-use tracing::log;
-use crate::app_errors::AppError;
 
 // pub async fn hello_handler() -> Html<&'static str> {
 //     Html("<h1>Hello, World!</h1>")
@@ -37,10 +36,42 @@ use crate::app_errors::AppError;
 
 pub async fn create_spot(
     State(state): State<AppState>,
-    Json(payload): Json<CreateSpotRequest>,
+    // Json(payload): Json<CreateSpotRequest>,
+    mut multipart: Multipart,
 ) -> Result<impl IntoResponse, AppError> {
-    let create_spot_command = payload.into();
 
+    let mut name = None;
+    let mut user = None;
+    let mut latitude = None;
+    let mut longitude = None;
+    let mut metadata = None;
+
+    while let Some(field) = multipart
+        .next_field()
+        .await
+        .map_err(|e| AppError::MultipartError(e.to_string()))?
+    {
+        let field_name = field.name().unwrap().to_string();
+        match field_name.as_str() {
+            "name" => name = Some(field.text().await.unwrap()),
+            "user" => user = Some(field.text().await.unwrap().parse::<i64>().unwrap()),
+            "latitude" => latitude = Some(field.text().await.unwrap().parse::<f64>().unwrap()),
+            "longitude" => longitude = Some(field.text().await.unwrap().parse::<f64>().unwrap()),
+            "metadata" => metadata = Some(field.text().await.unwrap()),
+            _ => {}
+        }
+    };
+
+    let payload = CreateSpotRequest {
+        name: name.unwrap(),
+        user: user.unwrap(),
+        latitude: latitude.unwrap(),
+        longitude: longitude.unwrap(),
+        metadata: metadata
+    };
+
+
+    let create_spot_command = payload.into();
     state
         .create_spot_use_case
         .create_spot(create_spot_command)
