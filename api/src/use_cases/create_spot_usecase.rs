@@ -1,11 +1,12 @@
-use crate::commands::{CreateSpotCommand};
+use std::error::Error;
+use crate::commands::CreateSpotCommand;
 
-use std::sync::Arc;
-use std::time::SystemTime;
-use tracing::log;
 use domain::aggregates::spot_aggregate::SpotAggregate;
 use domain::domain_event::DomainEvent;
 use domain::repository::SpotsRepository;
+use std::sync::Arc;
+use std::time::SystemTime;
+use tracing::log;
 
 #[derive(Debug)]
 pub enum CreateSpotError {
@@ -36,7 +37,8 @@ impl CreateSpotUseCase {
 
         let spot_aggregate_parts = spot_aggregate.into_parts();
 
-        let result = self.spot_repository
+        let result = self
+            .spot_repository
             .save(spot_aggregate_parts.0)
             .await
             .map_err(|e| CreateSpotError::Db(e.to_string()))?;

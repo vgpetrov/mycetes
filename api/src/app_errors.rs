@@ -1,3 +1,4 @@
+use std::error::Error;
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::{IntoResponse, Response};
@@ -7,7 +8,7 @@ use serde::Serialize;
 pub enum AppError {
     DbError(String),
     ValidationError(String),
-    MultipartError(String)
+    MultipartError(String),
 }
 
 #[derive(Serialize)]
