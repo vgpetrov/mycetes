@@ -62,7 +62,7 @@ impl SpotsRepository for SpotsDbRepository {
             .await
             .map_err(|e| {
                 tracing::error!("Failed to insert spot into db: {:?}", e);
-                anyhow!("Failed to insert spot into database: {}", e)
+                anyhow!("Failed to insert spot")
             })?;
 
         Ok(spot)
