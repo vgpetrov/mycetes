@@ -42,14 +42,14 @@ impl SpotsRepository for SpotsDbRepository {
             .get_pool()
             .map_err(|e| {
                 tracing::error!("Failed to get database pool: {:?}", e);
-                anyhow!("Failed to get database pool: {}", e)
+                anyhow!("Failed to connect to database")
             })?;
 
-        let spot_entity = sqlx::query_as::<_, SpotEntity>(
+        sqlx::query_as::<_, SpotLightEntity>(
             r#"
                 INSERT INTO spot (name, pub_id, user_id, latitude, longitude, metadata)
                 VALUES ($1, $2, $3, $4, $5, $6)
-                RETURNING id, pub_id, name, user_id, latitude, longitude, deleted, created_at, updated_at, metadata
+                RETURNING id, pub_id
             "#,
         )
             .bind(&spot.name)
