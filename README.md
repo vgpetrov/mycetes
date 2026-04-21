@@ -6,6 +6,7 @@ docker-compose -f docker-compose.yml -p mycetes up
 docker-compose -f docker-compose.yml down --rmi all
 docker-compose -f docker-compose.yml up --build
 
+docker compose -f docker-compose.yml -p mycetes build garage --no-cache
 docker-compose -f docker-compose.yml -p mycetes down --remove-orphans
 docker rm -f mycetes-telegraf 2>/dev/null || true
 ```
