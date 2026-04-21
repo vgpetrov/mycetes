@@ -4,5 +4,9 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+datadog-statsd = "0.1.2"
 async-trait = { version = "0.1.89" }
+sqlx = { version = "0.8.6", features = [ "runtime-tokio", "postgres", "migrate", "chrono"] }
+tracing = { version = "0.1.44" }
+anyhow = "1.0.102"
 domain = { path = "../domain"}

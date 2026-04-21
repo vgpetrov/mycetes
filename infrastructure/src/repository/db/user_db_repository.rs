@@ -1,9 +1,9 @@
-use crate::db::db_helper::DbHelper;
 use async_trait::async_trait;
 use domain::User;
 use domain::repository::UserRepository;
 use std::error::Error;
 use std::sync::Arc;
+use crate::repository::db::db_helper::DbHelper;
 
 pub struct UserDbRepository {
     db_helper: Arc<DbHelper>,

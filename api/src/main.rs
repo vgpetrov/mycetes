@@ -17,7 +17,6 @@ use axum::extract::DefaultBodyLimit;
 use axum::routing::{get, post};
 use domain::stats::StatsSender;
 use dotenv::dotenv;
-use repository::db;
 use std::env;
 use std::error::Error;
 use std::io::ErrorKind;
@@ -26,6 +25,7 @@ use std::time::Duration;
 use tower_http::trace::TraceLayer;
 use tracing::info;
 use tracing_subscriber::{EnvFilter, Layer, fmt, layer::SubscriberExt, util::SubscriberInitExt};
+use infrastructure::repository::db;
 
 #[derive(Clone)]
 struct AppState {

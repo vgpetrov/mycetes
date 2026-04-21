@@ -1,10 +1,10 @@
-use crate::db::db_helper::DbHelper;
 use crate::{SpotEntity, SpotLightEntity};
 use anyhow::{Context, anyhow};
 use async_trait::async_trait;
 use domain::repository::SpotsRepository;
 use std::error::Error;
 use std::sync::Arc;
+use crate::repository::db::db_helper::DbHelper;
 
 pub struct SpotsDbRepository {
     db_helper: Arc<DbHelper>,

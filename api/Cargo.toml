@@ -20,7 +20,7 @@ tracing-subscriber = { version = "0.3.23", features = ["env-filter", "json"] }
 uuid = { version = "1.23.1", features = ["v4"] }
 http = "1.3.1"
 tower-http = { version = "0.6.8", features = ["trace"] }
-stats = { path = "../stats"}
-repository = { path = "../repository"}
+#stats = { path = "../stats"}
+#repository = { path = "../repository"}
 domain = { path = "../domain"}
 infrastructure = { path = "../infrastructure"}
