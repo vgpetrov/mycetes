@@ -1,21 +1,25 @@
+use domain::file_storage::FileStorage;
+use domain::repository::SpotsRepository;
 use std::error::Error;
 use std::sync::Arc;
-use domain::repository::SpotsRepository;
 
 pub struct ListSpotsQuery {
     spot_repository: Arc<dyn SpotsRepository + Send + Sync>,
+    file_storage: Arc<dyn FileStorage + Send + Sync>,
 }
 
 impl ListSpotsQuery {
-    pub fn new(spot_repository: Arc<dyn SpotsRepository + Send + Sync>) -> Self {
+    pub fn new(
+        spot_repository: Arc<dyn SpotsRepository + Send + Sync>,
+        file_storage: Arc<dyn FileStorage + Send + Sync>,
+    ) -> Self {
         ListSpotsQuery {
-            spot_repository
+            spot_repository,
+            file_storage,
         }
     }
 
     pub async fn list_spots(&self) -> Result<Vec<domain::Spot>, Box<dyn Error>> {
-        self.spot_repository
-            .list_spots()
-            .await
+        self.spot_repository.list_spots().await
     }
 }

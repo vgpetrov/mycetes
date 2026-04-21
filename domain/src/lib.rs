@@ -4,6 +4,7 @@ pub mod domain_event;
 pub mod repository;
 pub mod stats;
 pub mod aggregates;
+pub mod file_storage;
 
 pub struct User {
     pub name: String,

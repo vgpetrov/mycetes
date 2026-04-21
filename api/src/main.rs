@@ -20,6 +20,7 @@ use dotenv::dotenv;
 use repository::db;
 use std::env;
 use std::error::Error;
+use std::io::ErrorKind;
 use std::sync::Arc;
 use std::time::Duration;
 use tower_http::trace::TraceLayer;
@@ -124,10 +125,18 @@ fn init_tracing(log_level: &str) {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    dotenv().ok();
+    match dotenv() {
+        Ok(_) => {}
+        Err(e) => {
+            return Err("Failed to load .env file".into());
+        }
+    }
+
     init_tracing("info");
 
-    let is_migration_enabled = env::var("ENABLE_MIGRATION")?.parse::<bool>()?;
+    let is_migration_enabled = env::var("ENABLE_MIGRATION")
+        .map(|v| v == "true" || v == "1")
+        .unwrap_or(false);
     if is_migration_enabled {
         run_migration().await?;
     }

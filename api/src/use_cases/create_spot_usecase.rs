@@ -7,6 +7,7 @@ use domain::repository::SpotsRepository;
 use std::sync::Arc;
 use std::time::SystemTime;
 use tracing::log;
+use domain::file_storage::FileStorage;
 
 #[derive(Debug)]
 pub enum CreateSpotError {
@@ -16,11 +17,15 @@ pub enum CreateSpotError {
 
 pub struct CreateSpotUseCase {
     spot_repository: Arc<dyn SpotsRepository + Send + Sync>,
+    file_storage: Arc<dyn FileStorage + Send + Sync>,
 }
 
 impl CreateSpotUseCase {
-    pub fn new(spot_repository: Arc<dyn SpotsRepository + Send + Sync>) -> Self {
-        CreateSpotUseCase { spot_repository }
+    pub fn new(
+        spot_repository: Arc<dyn SpotsRepository + Send + Sync>,
+        file_storage: Arc<dyn FileStorage + Send + Sync>,
+    ) -> Self {
+        CreateSpotUseCase { spot_repository, file_storage }
     }
 
     pub async fn create_spot(
