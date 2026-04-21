@@ -116,3 +116,5 @@ networks:
     driver: bridge
   db-mycetes-net:
     driver: bridge
+  storage-mycetes-net:
+    driver: bridge
