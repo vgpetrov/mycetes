@@ -87,7 +87,7 @@ services:
   garage:
     image: dxflrs/garage:v2.3.0
     container_name: mycetes-garage
-    restart: unless-stopped
+#    restart: unless-stopped
     command: /garage server --single-node --default-bucket
     ports:
       - "3900:3900"  # S3 API
