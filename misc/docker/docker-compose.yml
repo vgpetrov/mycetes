@@ -85,9 +85,11 @@ services:
       - monitor-mycetes-net
 
   garage:
-    image: dxflrs/garage:v2.3.0
+    build:
+      context: .
+      dockerfile: garage.Dockerfile
+    image: mycetes-garage:local
     container_name: mycetes-garage
-#    restart: unless-stopped
     command: /garage server --single-node --default-bucket
     ports:
       - "3900:3900"  # S3 API
@@ -100,7 +102,6 @@ services:
       GARAGE_DEFAULT_SECRET_KEY: replace-me-secret-key
       GARAGE_CONFIG_FILE: /etc/garage.toml
     volumes:
-      - ./garage/garage.toml:/etc/garage.toml:ro
       - ./garage/meta:/var/lib/garage/meta
       - ./garage/data:/var/lib/garage/data
     networks:
