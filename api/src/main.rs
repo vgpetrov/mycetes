@@ -21,7 +21,7 @@ use std::env;
 use std::error::Error;
 use std::io::ErrorKind;
 use std::sync::Arc;
-use std::time::Duration;
+use std::time::{Duration, Instant, SystemTime};
 use tower_http::trace::TraceLayer;
 use tracing::info;
 use tracing_subscriber::{EnvFilter, Layer, fmt, layer::SubscriberExt, util::SubscriberInitExt};
@@ -46,6 +46,7 @@ async fn run_migration() -> Result<(), Box<dyn Error>> {
 }
 
 async fn run_server() -> Result<(), Box<dyn Error>> {
+    let run_server_time = Instant::now();
     let app_state = state_manager::init_state().await?;
 
     let trace_layer = TraceLayer::new_for_http()
@@ -94,14 +95,10 @@ async fn run_server() -> Result<(), Box<dyn Error>> {
         .layer(trace_layer);
 
     let listener = tokio::net::TcpListener::bind(("0.0.0.0", 3002)).await?;
-    info!("listening on {}", listener.local_addr()?);
+    info!("Run server time: {} ms, listening on {}", run_server_time.elapsed().as_millis(), listener.local_addr()?);
     axum::serve(listener, app).await?;
     Ok(())
 }
-
-// fn init_logs() {
-//     init_tracing("info");
-// }
 
 fn init_tracing(log_level: &str) {
     let env_filter =
@@ -125,6 +122,8 @@ fn init_tracing(log_level: &str) {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
+    let migration_time = Instant::now();
+
     match dotenv() {
         Ok(_) => {}
         Err(e) => {
@@ -141,6 +140,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         run_migration().await?;
     }
 
+    info!("Db migration complete, time: {} ms", migration_time.elapsed().as_millis());
     run_server().await?;
 
     Ok(())

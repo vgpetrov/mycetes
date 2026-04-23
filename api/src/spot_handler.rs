@@ -70,7 +70,6 @@ pub async fn create_spot(
         metadata: metadata
     };
 
-
     let create_spot_command = payload.into();
     state
         .create_spot_use_case

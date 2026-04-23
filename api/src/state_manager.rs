@@ -17,12 +17,12 @@ use infrastructure::stats::stats_stub::StatsStub;
 use std::env;
 use std::error::Error;
 use std::sync::Arc;
+use infrastructure::file_storage::s3::garage_client::GarageClient;
 
 pub async fn init_state() -> Result<AppState, Box<dyn Error>> {
-
     let stats_client = init_stats()?;
     let repositories = init_repositories().await?;
-    let file_storage = init_file_storage()?;
+    let file_storage = init_file_storage().await?;
 
     let create_spot_use_case = CreateSpotUseCase::new(repositories.0.clone(), Arc::clone(&file_storage));
     let list_spots_query = ListSpotsQuery::new(repositories.0.clone(), Arc::clone(&file_storage));
@@ -37,18 +37,32 @@ pub async fn init_state() -> Result<AppState, Box<dyn Error>> {
 }
 
 
-fn init_file_storage() -> Result<Arc<dyn FileStorage + Send + Sync>, Box<dyn Error>> {
+async fn init_file_storage() -> Result<Arc<dyn FileStorage + Send + Sync>, Box<dyn Error>> {
     let file_storage_mock = env::var("FILE_STORAGE_MOCK")?.parse::<bool>()?;
     if file_storage_mock {
         Ok(Arc::new(MockFileStorage::new()))
     } else {
-        Ok(Arc::new(S3FileStorage::new()))
+        let access_key = env::var("S3_ACCESS_KEY")?;
+        let secret_key = env::var("S3_SECRET_KEY")?;
+        let region = env::var("S3_REGION")?;
+        let host = env::var("S3_HOST")?;
+
+        let mut client = GarageClient::new();
+        client.init(access_key, secret_key, region, host).await?;
+        let garage_client_arc = Arc::new(client);
+
+        Ok(Arc::new(S3FileStorage::new(Arc::clone(&garage_client_arc))))
     }
 }
 
 async fn init_repositories() -> Result<(Arc<dyn SpotsRepository + Send + Sync>, Arc<dyn UserRepository + Send + Sync>), Box<dyn Error>> {
     let db_mock = env::var("DB_MOCK")?.parse::<bool>()?;
-    if !db_mock {
+    if db_mock {
+        Ok((
+            Arc::new(MemSpotRepository::new()),
+            Arc::new(UserMemoryRepository::new()),
+        ))
+    } else {
         let db_host = env::var("DB_HOST")?;
         let db_user = env::var("DB_USER")?;
         let db_password = env::var("DB_PASSWORD")?;
@@ -61,11 +75,6 @@ async fn init_repositories() -> Result<(Arc<dyn SpotsRepository + Send + Sync>, 
         Ok((
             Arc::new(SpotsDbRepository::new(Arc::clone(&db_helper_arc))),
             Arc::new(UserDbRepository::new(Arc::clone(&db_helper_arc))),
-        ))
-    } else {
-        Ok((
-            Arc::new(MemSpotRepository::new()),
-            Arc::new(UserMemoryRepository::new()),
         ))
     }
 }
