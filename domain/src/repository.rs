@@ -1,11 +1,12 @@
 use std::error::Error;
 use async_trait::async_trait;
-use crate::{Spot, User};
+use crate::{Photo, Spot, User};
 
 #[async_trait]
 pub trait SpotsRepository: Send + Sync {
     async fn list_spots(&self) -> Result<Vec<Spot>, Box<dyn Error>>;
     async fn save(&self, spot: Spot) -> Result<Spot, Box<dyn Error>>;
+    async fn save_photos(&self, spot_pub_id: &str, photo_vec: Vec<Photo>) -> Result<(), Box<dyn Error>>;
 }
 
 #[async_trait]

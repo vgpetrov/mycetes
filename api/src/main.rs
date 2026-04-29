@@ -22,6 +22,7 @@ use std::error::Error;
 use std::io::ErrorKind;
 use std::sync::Arc;
 use std::time::{Duration, Instant, SystemTime};
+use tower_http::classify::ServerErrorsFailureClass::StatusCode;
 use tower_http::trace::TraceLayer;
 use tracing::info;
 use tracing_subscriber::{EnvFilter, Layer, fmt, layer::SubscriberExt, util::SubscriberInitExt};
@@ -72,11 +73,19 @@ async fn run_server() -> Result<(), Box<dyn Error>> {
         })
         .on_response(
             |response: &http::Response<_>, latency: Duration, _span: &tracing::Span| {
-                tracing::info!(
-                    status = %response.status(),
-                    latency_ms = latency.as_millis(),
-                    "request finished"
-                );
+                if response.status().is_success() || response.status().is_informational() {
+                    tracing::info!(
+                        status = %response.status(),
+                        latency_ms = latency.as_millis(),
+                        "request finished"
+                    );
+                } else {
+                    tracing::warn!(
+                        status = %response.status(),
+                        latency_ms = latency.as_millis(),
+                        "request finished"
+                    );
+                }
             },
         )
         .on_failure(());

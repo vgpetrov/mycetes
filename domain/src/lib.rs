@@ -24,3 +24,13 @@ pub struct Spot {
     pub approved_by: Option<i64>,
     pub deleted: bool,
 }
+
+
+#[derive(Clone)]
+pub struct Photo {
+    pub spot_pub_id: Option<String>,
+    pub storage_key: Option<String>,
+    pub file_name: String,
+    pub content_type: String,
+    pub bytes: Option<Vec<u8>>,
+}

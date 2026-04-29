@@ -1,6 +1,6 @@
 use std::error::Error;
 use crate::domain_event::{DomainEvent};
-use crate::Spot;
+use crate::{Photo, Spot};
 
 /// Represents a spot aggregate that holds a repository and a buffer of domain events.
 ///
@@ -8,13 +8,15 @@ use crate::Spot;
 /// validating a `Spot` before saving, recording events, and pulling domain events.
 pub struct SpotAggregate {
     spot: Spot,
+    photo_vec: Vec<Photo>,
     event_buffer: Vec<DomainEvent>,
 }
 
 impl SpotAggregate {
-    pub fn new(spot: Spot) -> Self {
+    pub fn new(spot: Spot, photo_vec: Vec<Photo>) -> Self {
         SpotAggregate {
             spot,
+            photo_vec,
             event_buffer: Vec::new(),
         }
     }
@@ -25,8 +27,8 @@ impl SpotAggregate {
         Ok(())
     }
 
-    pub fn into_parts(self) -> (Spot, Vec<DomainEvent>){
-        (self.spot, self.event_buffer)
+    pub fn into_parts(self) -> (Vec<DomainEvent>, Spot, Vec<Photo>){
+        (self.event_buffer, self.spot, self.photo_vec)
     }
 
     fn record_event(&mut self, event: DomainEvent) {

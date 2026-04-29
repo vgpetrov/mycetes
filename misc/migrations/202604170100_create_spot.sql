@@ -20,9 +20,10 @@ CREATE TABLE spot_photo
     id          bigserial PRIMARY KEY,
     spot_id     bigint      NOT NULL,
     storage_key text        NOT NULL,
-    metadata    text,
-    sort_order  integer     NOT NULL DEFAULT 0,
-    created_at  timestamptz NOT NULL DEFAULT now()
+    metadata    text        NOT NULL DEFAULT '{}',
+    created_at  timestamptz NOT NULL DEFAULT now(),
+    updated_at  TIMESTAMPTZ      NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX spot_photo_spot_id_idx ON spot_photo (spot_id);
+CREATE INDEX spot_photo_storage_key_idx ON spot_photo (storage_key);

@@ -4,6 +4,7 @@ use domain::repository::SpotsRepository;
 use std::error::Error;
 use std::sync::{Arc, Mutex};
 use sqlx::types::chrono::{DateTime, Utc};
+use domain::Photo;
 
 pub struct MemSpotRepository {
     datasource: Arc<Mutex<Vec<SpotEntity>>>,
@@ -51,5 +52,9 @@ impl SpotsRepository for MemSpotRepository {
 
         let spot = self.datasource.lock().unwrap().last().unwrap().clone();
         Ok(spot.into())
+    }
+
+    async fn save_photos(&self, spot_pub_id: &str, photo_vec: Vec<Photo>) -> Result<(), Box<dyn Error>> {
+        Ok(())
     }
 }
