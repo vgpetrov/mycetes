@@ -32,5 +32,6 @@ pub struct Photo {
     pub storage_key: Option<String>,
     pub file_name: String,
     pub content_type: String,
+    pub thumbnail_bytes: Option<Vec<u8>>,
     pub bytes: Option<Vec<u8>>,
 }

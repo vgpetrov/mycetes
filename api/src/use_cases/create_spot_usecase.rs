@@ -1,6 +1,4 @@
 use crate::commands::CreateSpotCommand;
-use std::error::Error;
-
 use domain::aggregates::spot_aggregate::SpotAggregate;
 use domain::domain_event::DomainEvent;
 use domain::file_storage::FileStorage;
@@ -44,19 +42,19 @@ impl CreateSpotUseCase {
             .inspect_err(|e| log::error!("Failed to validate spot: {}", e))
             .map_err(|e| CreateSpotError::Validation(e.to_string()))?;
 
-        let spot_aggregate_parts = spot_aggregate.into_parts();
+        let (domain_events, spot, photo_vec) = spot_aggregate.into_parts();
 
         // TOOD: make steps them tokio concurrent
         // 1. Create Spot in DB
         let result = self
             .spot_repository
-            .save(spot_aggregate_parts.1)
+            .save(spot)
             .await
             .map_err(|e| CreateSpotError::Db(e.to_string()))?;
 
         // 2. Save photos in S3
         let mut photo_keys_vec: Vec<Photo> = Vec::new();
-        for photo in spot_aggregate_parts.2 {
+        for photo in photo_vec {
             let photo_key = self.file_storage
                 .store(&result.pub_id, photo)
                 .await
@@ -70,7 +68,7 @@ impl CreateSpotUseCase {
             .await
             .map_err(|e| CreateSpotError::Db(e.to_string()))?;
 
-        self.publish_events(spot_aggregate_parts.0);
+        self.publish_events(domain_events);
 
         Ok(result)
     }

@@ -18,6 +18,7 @@ impl FileStorage for MockFileStorage {
             storage_key: None,
             file_name: "".to_string(),
             content_type: "".to_string(),
+            thumbnail_bytes: None,
             bytes: None,
         })
     }

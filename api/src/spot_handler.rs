@@ -38,7 +38,6 @@ pub async fn create_spot(
     // Json(payload): Json<CreateSpotRequest>,
     mut multipart: Multipart,
 ) -> Result<impl IntoResponse, AppError> {
-
     let mut name: Option<String> = None;
     let mut user: Option<i64> = None;
     let mut latitude: Option<f64> = None;
@@ -53,6 +52,7 @@ pub async fn create_spot(
         .map_err(|e| AppError::MultipartError(e.to_string()))?
     {
         let field_name = field.name().unwrap().to_string();
+        // TODO: write proper validation
         match field_name.as_str() {
             "name" => name = Some(field.text().await.unwrap()),
             "user" => user = Some(field.text().await.unwrap().parse::<i64>().unwrap()),
@@ -60,19 +60,49 @@ pub async fn create_spot(
             "longitude" => longitude = Some(field.text().await.unwrap().parse::<f64>().unwrap()),
             "metadata" => metadata = Some(field.text().await.unwrap()),
             "photos" => {
-                let file_name = field.file_name().unwrap().to_string();
-                let content_type = field.content_type().unwrap().to_string();
-                let bytes = field.bytes().await.unwrap();
+                let file_name = field
+                    .file_name()
+                    .ok_or_else(|| {
+                        AppError::ValidationError("Photo filename is missing".to_string())
+                    })?
+                    .to_string();
+
+                let content_type = field
+                    .content_type()
+                    .ok_or_else(|| {
+                        AppError::ValidationError("Photo content type is missing".to_string())
+                    })?
+                    .to_string();
+
+                let bytes = field
+                    .bytes()
+                    .await
+                    .map_err(|e| AppError::MultipartError(e.to_string()))?;
+
+                let handle = tokio::task::spawn_blocking(move || {
+                    let thumbnail_result = PhotoRequest::create_thumbnail(&bytes);
+
+                    let photo_result =
+                        PhotoRequest::validate_photo(file_name, content_type, bytes.to_vec());
+
+                    (thumbnail_result, photo_result)
+                })
+                .await;
+
+                let (thumbnail, photo) = handle.unwrap();
+                let thumbnail = thumbnail.map_err(|e| AppError::MultipartError(e.to_string()))?;
+                let (photo_file_name, photo_content_type, photo_bytes) = photo.map_err(|e| e)?;
 
                 photos.push(PhotoRequest {
-                    file_name,
-                    content_type,
-                    bytes: bytes.to_vec()
+                    file_name: photo_file_name,
+                    content_type: photo_content_type,
+                    thumbnail_bytes: thumbnail,
+                    bytes: photo_bytes,
                 });
             }
             _ => {}
         }
-    };
+    }
 
     let payload = CreateSpotRequest {
         name: name.unwrap(),

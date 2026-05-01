@@ -1,4 +1,5 @@
-mod spot;
+pub mod spot;
+pub mod photo;
 
 pub use spot::CreateSpotRequest;
-pub use spot::PhotoRequest;
+pub use photo::PhotoRequest;
