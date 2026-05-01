@@ -1,6 +1,5 @@
 use std::error::Error;
 use sqlx::postgres::PgPoolOptions;
-use tracing::{info, warn};
 use anyhow::{Result, Context};
 
 pub struct DbHelper {

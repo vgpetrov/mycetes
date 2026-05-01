@@ -104,11 +104,8 @@ impl PhotoRequest {
 
     pub fn create_thumbnail(bytes: &[u8]) -> Result<Vec<u8>, image::ImageError> {
         let img = image::load_from_memory(bytes)?;
-
         let thumb = img.resize(768, 768, FilterType::Lanczos3);
-
         let mut output = Cursor::new(Vec::new());
-
         thumb.write_to(&mut output, image::ImageFormat::Jpeg)?;
 
         Ok(output.into_inner())

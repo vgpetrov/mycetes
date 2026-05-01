@@ -1,6 +1,6 @@
 use crate::repository::db::db_helper::DbHelper;
 use crate::{SpotEntity, SpotLightEntity};
-use anyhow::{Context, anyhow};
+use anyhow::{anyhow};
 use async_trait::async_trait;
 use domain::Photo;
 use domain::repository::SpotsRepository;

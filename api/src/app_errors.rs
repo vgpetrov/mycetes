@@ -1,4 +1,3 @@
-use std::error::Error;
 use axum::http::StatusCode;
 use axum::Json;
 use axum::response::{IntoResponse, Response};
